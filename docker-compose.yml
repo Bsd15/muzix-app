@@ -3,20 +3,27 @@ services:
   #  Container for Java
   #  docker run -d --name track-service-config-server -network host spring-boot-java
   muzix-config-server:
-    build: .
+    build: config-server/.
     container_name: muzix-config-server
     network_mode: "host"
 
   muzix-eureka-server:
-    build: .
+    build: eureka-server/.
     container_name: muzix-eureka-server
     network_mode: "host"
 
   #  docker run -d --name track-service-java -network host spring-boot-java
   muzix-track-service:
-    build: .
+    build: docker-trackservice-mongodb/.
     container_name: muzix-track-service
     network_mode: "host"
+    depends_on:
+      - muzix-config-server
+      - muzix-eureka-server
+      - mongo
+    environment:
+      WAIT_HOSTS: localhost:8090 ,localhost:27017, localhost:8761
+      WAIT_BEFORE_HOSTS: 15
 
   #  Container for Mongo
   # docker run -d --name track-service-mongo -network host mongo
